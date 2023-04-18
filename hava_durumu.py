@@ -17,11 +17,13 @@ if response.status_code == 200:
     Zaman = soup.find(class_='CurrentConditions--timestamp--1ybTk')
     Sıcaklık = soup.find(class_='CurrentConditions--tempValue--MHmYY')
     Nem = soup.find(class_='WeatherDetailsListItem--wxData--kK35q')
-    Basınç = soup.find(class_='Pressure--pressureWrapper--3SCLm undefined')
+    Basınc = soup.find(class_='Pressure--pressureWrapper--3SCLm undefined')
     Rüzgar = soup.find(class_='Wind--windWrapper--3Ly7c undefined')
     Günes_Dogus = soup.find(class_='SunriseSunset--dateValue--3H780')
-    
-    # Elementlerin içeriğini ekrana yazdırın
+    Hava_Kalitesi_İndexi0 = soup.find(class_='AirQuality--col--3I-4C')
+    Hava_Kalitesi_İndexi1 = soup.find(class_='AirQualityText--AirQuality--2uuF7')
+    Saglık_Aktiviteler = soup.find(class_='HealthActivitiesListItem--details--3xbqs')
+
     if Yer:
         print("Yer:", Yer.text.strip())
     if Zaman:
@@ -30,26 +32,47 @@ if response.status_code == 200:
         print("Sıcaklık:", Sıcaklık.text.strip())
     if Nem:
         print("Nem:", Nem.text.strip())
-    if Basınç:
-        print("Basınç:", Basınç.text.strip())
+    if Basınc:
+        print("Basınç:", Basınc.text.strip())
     if Rüzgar:
         print("Rüzgar Hızı:", Rüzgar.text.strip())
     if Günes_Dogus:
         print("Günesin Doğuşu:", Günes_Dogus.text.strip())
+    if Hava_Kalitesi_İndexi0:
+        print("Hava Kalitesi: %" + Hava_Kalitesi_İndexi0.text.strip(), end=" ")
+    if Hava_Kalitesi_İndexi1:
+        print("" + Hava_Kalitesi_İndexi1.text.strip())
 
-
-    # Kullanıcıdan veri kaydetme seçeneğini sormak
-    kaydet = input("Verileri kaydetmek istiyor musunuz? (E/H): ")
-    if kaydet.upper() == "E":
-        # Verileri dosyaya kaydetme
-        with open("hava_durumu.txt", "w") as dosya:
-            dosya.write("Yer: {}\n".format(Yer.text.strip()))
-            dosya.write("Zaman: {}\n".format(Zaman.text.strip()))
-            dosya.write("Sıcaklık: {}\n".format(Sıcaklık.text.strip()))
-            dosya.write("Nem: {}\n".format(Nem.text.strip()))
-            dosya.write("Basınç: {}\n".format(Basınç.text.strip()))
-            dosya.write("Rüzgar Hızı: {}\n".format(Rüzgar.text.strip()))
-            dosya.write("Günesin Doğuşu: {}\n".format(Günes_Dogus.text.strip()))
-        print("Veriler hava_durumu.txt dosyasına kaydedildi.")
+    if Saglık_Aktiviteler:
+        print("Sağlık Önerileri :", Saglık_Aktiviteler.text.strip())
 else:
-    print("Hata: İstenilen bilgiler dosyaya kaydedilemedi üzgünüz")
+    print("Hava durumu verileri alınamadı. Hata kodu:", response.status_code)
+
+with open("hava_durumu.txt", "w") as file:
+    # Verileri dosyaya yazın
+    if Yer:
+        file.write("Yer: " + Yer.text.strip() + "\n")
+    if Zaman:
+        file.write("Zaman: " + Zaman.text.strip() + "\n")
+    if Sıcaklık:
+        file.write("Sıcaklık: " + Sıcaklık.text.strip() + "\n")
+    if Nem:
+        file.write("Nem: " + Nem.text.strip() + "\n")
+    if Basınc:
+        file.write("Basınç: " + Basınc.text.strip() + "\n")
+    if Rüzgar:
+        file.write("Rüzgar Hızı: " + Rüzgar.text.strip() + "\n")
+    if Günes_Dogus:
+        file.write("Güneşin Doğuşu: " + Günes_Dogus.text.strip() + "\n")
+    if Hava_Kalitesi_İndexi0:
+        file.write("Hava Kalitesi: %" + Hava_Kalitesi_İndexi0.text.strip() + " " + Hava_Kalitesi_İndexi1.text.strip() + "\n")
+    if Saglık_Aktiviteler:
+        file.write("Sağlık Önerileri: " + Saglık_Aktiviteler.text.strip() + "\n")
+# Kullanıcıdan dosyanın kaydedilip kaydedilmeyeceğini sormak için girdi alın
+cevap = input("Dosya kaydedilsin mi? (E/H): ")
+
+# Kullanıcının cevabına göre dosyayı kaydedin veya kaydetmeyin
+if cevap.lower() == "e":
+    print("Dosya kaydedildi.")
+else:
+    print("Dosya kaydedilmedi.")
